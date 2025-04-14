@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<title> Registration Form</title>
 <style>
   body {
   display: flex;
@@ -167,6 +168,77 @@
       <div></div>
     </div>
   </div>
-    
+  <script>
+    document.querySelector("form").addEventListener("submit", function (e) {
+      const fullNameInput = document.getElementById("fullName");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const confirmPasswordInput = document.getElementById("confirmPassword");
+      const dobInput = document.getElementById("dob");
+
+      const fullName = fullNameInput.value.trim();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+      const dob = new Date(dobInput.value);
+  
+      const nameRegex = /^[A-Za-z\s]+$/;
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@student\.aiub\.edu$/;
+      const uppercaseRegex = /[A-Z]/;
+      const numberRegex = /[0-9]/;
+      const symbolRegex = /[^A-Za-z0-9]/;
+  
+      if (!nameRegex.test(fullName)) {
+        e.preventDefault();
+        alert("Full Name is invalid. It should not contain numbers or special characters.");
+        fullNameInput.focus();
+        return;
+      }
+
+      if (!emailRegex.test(email)) {
+        e.preventDefault();
+        alert("Email is invalid. It must be a student email (e.g., yourID@student.aiub.edu).");
+        emailInput.focus();
+        return;
+      }
+
+      if (password.length !== 8) {
+        e.preventDefault();
+        alert("Password must be exactly 8 characters long.");
+        passwordInput.focus();
+        return;
+      }
+
+      if (!uppercaseRegex.test(password) || !numberRegex.test(password) || !symbolRegex.test(password)) {
+        e.preventDefault();
+        alert("Password must contain at least one uppercase letter, one number, and one special character.");
+        passwordInput.focus();
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        e.preventDefault();
+        alert("Passwords do not match.");
+        confirmPasswordInput.focus();
+        return;
+      }
+
+      const currentDate = new Date();
+      const age = currentDate.getFullYear() - dob.getFullYear();
+      const monthDiff = currentDate.getMonth() - dob.getMonth();
+      const DateDiff = currentDate.getDate() - dob.getDate()
+
+      if (monthDiff < 0 || (monthDiff === 0 && DateDiff < 0)) {
+        age--;
+      }
+
+      if (age < 18) {
+        e.preventDefault();
+        alert("You must be at least 18 years old to register.");
+        dobInput.focus();
+        return;
+      }
+    });
+  </script>  
 </body>
 </html>

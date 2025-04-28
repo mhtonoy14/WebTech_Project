@@ -11,13 +11,15 @@
   margin: 0; 
   flex-direction: column; 
   background-color: #f0f0f0; 
+  margin-bottom: 50px;
+  margin-top: 50px;
   }
   .flex-container {
     display: flex;
     flex-direction: row;
     background-color: DodgerBlue;
-    width: 550px;
-    height: 730px;
+    width: 540px;
+    height: 780px;
     border: 5px solid DodgerBlue;
   }
 
@@ -28,7 +30,7 @@
     align-items: flex-start;
     background-color: #f1f1f1;
     width: 245px;
-    height: 680px;
+    height: 710px;
     padding: 25px; 
     text-align: center;
     font-size: 30px;
@@ -81,11 +83,11 @@
   .right-column > div:last-child {
     background-color: #f1f1f1;
     width: 180px;
-    flex-grow: 2; 
+    flex-grow: 1; 
     padding: 35px; 
     text-align: center;
     font-size: 30px;
-    margin-bottom: 0; /
+    margin-bottom: 0;
   }
 
   .submit-btn {
@@ -102,6 +104,20 @@
     margin-bottom: 20px;
   }
 
+  .error {
+    border: 1px solid red;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 10px;
+    margin-top: 2px;
+    text-align: left;    /* <<< force left align */
+    width: 100%;         /* <<< make it full width */
+    padding-left: 2px;
+    /*display: none;*/
+  }
+
 </style>
 </head>
 <body>
@@ -112,19 +128,19 @@
       <form>
         <h5>Registration Form</h5>
         <label for="fullName">Full Name:</label>
-        <input type="text" id="fullName" name="fullName" required>
+        <input type="text" id="fullName" name="fullName">
 
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email">
 
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password">
 
         <label for="confirmPassword">Confirm Password:</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" required>
+        <input type="password" id="confirmPassword" name="confirmPassword">
 
         <label for="dob">Date of Birth:</label>
-        <input type="date" id="dob" name="dob" required>
+        <input type="date" id="dob" name="dob">
 
         <label for="country">Country:</label>
         <select id="country" name="country">
@@ -170,75 +186,122 @@
   </div>
   <script>
     document.querySelector("form").addEventListener("submit", function (e) {
+      e.preventDefault(); // prevent submit initially
+      let isValid = true; // flag to check all fields
+      
+      // Clear previous error styles/messages
+      document.querySelectorAll(".error-message").forEach(el => el.remove());
+      document.querySelectorAll("input, select, textarea").forEach(el => el.classList.remove("error"));
+    
       const fullNameInput = document.getElementById("fullName");
       const emailInput = document.getElementById("email");
       const passwordInput = document.getElementById("password");
       const confirmPasswordInput = document.getElementById("confirmPassword");
       const dobInput = document.getElementById("dob");
-
+      const countryInput = document.getElementById("country");
+      const genderInputs = document.querySelectorAll('input[name="gender"]');
+      //const termsCheckbox = document.getElementById("terms");
+    
       const fullName = fullNameInput.value.trim();
       const email = emailInput.value.trim();
       const password = passwordInput.value;
       const confirmPassword = confirmPasswordInput.value;
       const dob = new Date(dobInput.value);
-  
+    
       const nameRegex = /^[A-Za-z\s]+$/;
       const emailRegex = /^[a-zA-Z0-9._%+-]+@student\.aiub\.edu$/;
       const uppercaseRegex = /[A-Z]/;
       const numberRegex = /[0-9]/;
       const symbolRegex = /[^A-Za-z0-9]/;
-  
-      if (!nameRegex.test(fullName)) {
-        e.preventDefault();
-        alert("Full Name is invalid. It should not contain numbers or special characters.");
-        fullNameInput.focus();
-        return;
+    
+      // Helper function to show error
+      function showError(input, message) {
+        input.classList.add("error");
+        const error = document.createElement("div");
+        error.className = "error-message";
+        error.innerText = message;
+        error.style.display = "block";
+        input.parentNode.insertBefore(error, input.nextSibling);
+        isValid = false;
       }
-
-      if (!emailRegex.test(email)) {
-        e.preventDefault();
-        alert("Email is invalid. It must be a student email (e.g., yourID@student.aiub.edu).");
-        emailInput.focus();
-        return;
+    
+      // Full Name
+      if (!fullName) {
+        showError(fullNameInput, "*Full Name is required");
+      } else if (!nameRegex.test(fullName)) {
+        showError(fullNameInput, "*Full Name should only contain letters and spaces");
       }
-
-      if (password.length !== 8) {
-        e.preventDefault();
-        alert("Password must be exactly 8 characters long.");
-        passwordInput.focus();
-        return;
+    
+      // Email
+      if (!email) {
+        showError(emailInput, "*Email is required");
+      } else if (!emailRegex.test(email)) {
+        showError(emailInput, "*Email must be a valid student email (example@student.aiub.edu)");
       }
-
-      if (!uppercaseRegex.test(password) || !numberRegex.test(password) || !symbolRegex.test(password)) {
-        e.preventDefault();
-        alert("Password must contain at least one uppercase letter, one number, and one special character.");
-        passwordInput.focus();
-        return;
+    
+      // Password
+      if (!password) {
+        showError(passwordInput, "*Password is required");
+      } else if (password.length !== 8) {
+        showError(passwordInput, "*Password must be exactly 8 characters");
+      } else if (!uppercaseRegex.test(password) || !numberRegex.test(password) || !symbolRegex.test(password)) {
+        showError(passwordInput, "*Password must contain uppercase, number, and special character");
       }
-
-      if (password !== confirmPassword) {
-        e.preventDefault();
-        alert("Passwords do not match.");
-        confirmPasswordInput.focus();
-        return;
+    
+      // Confirm Password
+      if (!confirmPassword) {
+        showError(confirmPasswordInput, "*Please confirm your password");
+      } else if (password !== confirmPassword) {
+        showError(confirmPasswordInput, "*Passwords do not match");
       }
-
-      const currentDate = new Date();
-      const age = currentDate.getFullYear() - dob.getFullYear();
-      const monthDiff = currentDate.getMonth() - dob.getMonth();
-      const DateDiff = currentDate.getDate() - dob.getDate()
-
-      if (monthDiff < 0 || (monthDiff === 0 && DateDiff < 0)) {
-        age--;
+    
+      // Date of Birth
+      if (!dobInput.value) {
+        showError(dobInput, "*Date of Birth is required");
+      } else {
+        const currentDate = new Date();
+        let age = currentDate.getFullYear() - dob.getFullYear();
+        const monthDiff = currentDate.getMonth() - dob.getMonth();
+        const dateDiff = currentDate.getDate() - dob.getDate();
+    
+        if (monthDiff < 0 || (monthDiff === 0 && dateDiff < 0)) {
+          age--;
+        }
+        if (age < 18) {
+          showError(dobInput, "*You must be at least 18 years old");
+        }
       }
-
-      if (age < 18) {
-        e.preventDefault();
-        alert("You must be at least 18 years old to register.");
-        dobInput.focus();
-        return;
+    
+      // Country
+      if (!countryInput.value) {
+        showError(countryInput, "*Please select your country");
+      }
+    
+      // Gender
+      let genderSelected = false;
+      genderInputs.forEach(input => {
+        if (input.checked) genderSelected = true;
+      });
+      if (!genderSelected) {
+        const genderContainer = genderInputs[0].parentNode;
+        const error = document.createElement("div");
+        error.className = "error-message";
+        error.innerText = "*Please select your gender";
+        error.style.display = "block"; 
+        genderContainer.parentNode.insertBefore(error, genderContainer.nextSibling);
+        isValid = false;
+      }
+    
+      // Terms and Conditions
+      /*if (!termsCheckbox.checked) {
+        showError(termsCheckbox, "*You must agree to the Terms and Conditions");
+      }*/
+    
+      // Finally, if all fields valid, submit form
+      if (isValid) {
+        this.submit();
       }
     });
-  </script>  
+    </script>    
 </body>
 </html>

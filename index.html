@@ -74,7 +74,7 @@
   .right-column > div:first-child { 
     background-color: #f1f1f1;
     width: 180px;
-    flex-grow: 2; 
+    flex-grow: 1; 
     padding: 35px; 
     text-align: center;
     font-size: 30px;
@@ -83,7 +83,7 @@
   .right-column > div:last-child {
     background-color: #f1f1f1;
     width: 180px;
-    flex-grow: 1; 
+    flex-grow: 3; 
     padding: 35px; 
     text-align: center;
     font-size: 30px;
@@ -120,7 +120,7 @@
 </style>
 </head>
 <body>
-  <img src = "DSC_0149-01.jpeg" alt = "Logo" style="width:50px;height:50px;border-radius:50%;margin-bottom:0px;">
+  <img src = "DSC_0149-01.jpeg" alt = "Logo" style="width:100px;height:100px;border-radius:50%;margin-bottom:0px;">
   <h4>Tonoy</h4>
   <div class="flex-container">
     <div class="left-column">
@@ -137,6 +137,11 @@
 
         <label for="confirmPassword">Confirm Password:</label>
         <input type="password" id="confirmPassword" name="confirmPassword">
+
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="checkbox" id="showPassword" onclick="togglePasswordVisibility()">
+          <label for="showPassword" style="font-size:12px;">Show Password</label>
+        </div>
 
         <label for="dob">Date of Birth:</label>
         <input type="date" id="dob" name="dob">
@@ -184,6 +189,19 @@
     </div>
   </div>
   <script>
+    function togglePasswordVisibility() {
+      const passwordField = document.getElementById("password");
+      const confirmPasswordField = document.getElementById("confirmPassword");
+      const showPasswordCheckbox = document.getElementById("showPassword");
+
+      if (showPasswordCheckbox.checked) {
+        passwordField.type = "text";
+        confirmPasswordField.type = "text";
+      } else {
+        passwordField.type = "password";
+        confirmPasswordField.type = "password";
+      }
+    }
     document.querySelector("form").addEventListener("submit", function (e) {
       e.preventDefault(); 
       let isValid = true; 
